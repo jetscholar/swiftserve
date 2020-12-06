@@ -9,8 +9,10 @@ var app = express()
 var Data = require('./noteSchema')
 
 mongoose.connect(process.env.SECURE_URL, {
-    useNewUrlParser: true, 
-    useUnifiedTopology: true 
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true, 
+    useUnifiedTopology: true
 })
 const db = mongoose.connection
 db.on('error', (error) => console.error(error))
@@ -35,13 +37,28 @@ app.post("/create", (req, res) => {
 
 // Delete a note (post)
 app.post("/delete", (req, res) => {
-    Data.findOneAndRemove({
+    Data.findOneAndDelete({
         _id: req.get("id")
     }, (err) => {
-        console.log("Delete failed" + err)
+        console.log("Delete failed " + err)
     })
+    res.send("File deleted")
 })
+
 // Update a note (post)
+app.post('/update', (req, res) => {
+    Data.findOneAndUpdate({
+        _id: req.get("id")
+    }, {
+        note: req.get("note"),
+        title: req.get("title"),
+        date: req.get("date")
+    }, (err) => {
+        console.log("Failed to udate " + err)
+    })
+    res.send("Updated")
+})
+
 
 // Fetch a note (get)
 app.get('/fetch', (req, res) => {
@@ -50,7 +67,7 @@ app.get('/fetch', (req, res) => {
     })
 })
 
-// http://192.168.1.6:4200/create
-var server = app.listen(process.env.PORT || port, "192.168.1.6", () => {
+// http://192.168.1.3:4200/create
+var server = app.listen(process.env.PORT || port, "192.168.1.3", () => {
     console.log('Server running on http://localhost:' + port)
 })

@@ -7,6 +7,6 @@ var note = new Schema({
     note: String
 })
 
-const Data = mongoose.model("data", note)
+const data = mongoose.model("data", note)
 
-module.exports = Data
+module.exports = data
